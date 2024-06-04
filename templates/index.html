@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Take Picture</title>
+    </head>
+    <body>
+        <h1>Mouse coordinates:</h1>
+
+        <p id="message"></p>
+        <script>
+            var ws = new WebSocket("ws://localhost:8000/ws");
+            
+            ws.onmessage = function(event) {
+                var message = document.getElementById('message')
+                message.innerText = event.data
+            };
+            
+            function sendMessage(event) {
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+
+            document.addEventListener("mouseup", (e)=>{
+                if (e.button === 0){
+                    let data = {
+                        "event": "mouseup",
+                      "x": e.clientX,
+                      "y": e.clientY
+                    }
+                    
+                    ws.send(JSON.stringify(data))
+                }
+            })
+            
+            document.addEventListener("mousemove", (e)=> {
+                let data = {
+                    "event": "mousemove",
+                    "x": e.clientX,
+                    "y": e.clientY
+                }
+                ws.send(JSON.stringify(data))
+            })
+        </script>
+    </body>
+</html>
